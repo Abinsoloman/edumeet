@@ -133,7 +133,7 @@ class _MyprofileState extends State<Myprofile> {
                     child: CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.amber,
-                      backgroundImage: NetworkImage(studentimage),
+                      //backgroundImage: NetworkImage(studentimage),
                     ),
                   ),
                 ),
@@ -169,24 +169,10 @@ class _MyprofileState extends State<Myprofile> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 60),
-                    child: Row(
-                      children: [
-                        Text(
-                          firstnme,
-                          style:
-                              TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                        ),
-                        Text(
-                          middlenme,
-                          style:
-                              TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                        ),
-                        Text(
-                          lastnme,
-                          style:
-                              TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                        ),
-                      ],
+                    child: Text(
+                      "$firstnme $middlenme $lastnme",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                   ),
                   IconButton(
@@ -228,7 +214,10 @@ class _MyprofileState extends State<Myprofile> {
                                           width: 400,
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              profiletext();
+                                              setState(() {
+                                                  profiletext();
+                                              });
+                                            
                                             },
                                             child: Text(
                                               "Save",
@@ -288,7 +277,7 @@ class _MyprofileState extends State<Myprofile> {
                                     Border.all(color: Colors.red, width: 3)),
                             child: CircleAvatar(
                               radius: 30,
-                              backgroundImage: NetworkImage(parentimage),
+                             // backgroundImage: NetworkImage(parentimage),
                             ),
                           ),
                         ),
@@ -623,8 +612,8 @@ class _MyprofileState extends State<Myprofile> {
       country = result.data.countries.name;
       nationality = result.data.nationalities.name;
 
-      studentimage = result.data.profileImageUrl;
-      parentimage = result.data.parents.imageUrl;
+      //studentimage = result.data.profileImageUrl;
+      //parentimage = result.data.parents.imageUrl;
       
     });
   }
@@ -640,13 +629,15 @@ class _MyprofileState extends State<Myprofile> {
       showerrormsg1("lastname is empty");
     }else{
       final frmdata2 = FormData.fromMap({
-        "firstname":firstname,
-        "middlename": middlenme,
-        "lastname": lastnme});
+        "first_name":firstname,
+        "middle_name": middlename,
+        "last_name": lastname});
       final Response = apiclass().editprofileuserapi(frmdata2);
       if(Response != null){
         
         showsucessmsg1("edit sucess");
+        
+        next1();
       }else{
         showerrormsg1("edit fail");
       }
@@ -662,5 +653,10 @@ class _MyprofileState extends State<Myprofile> {
   void showerrormsg1(String msg) {
     MotionToast.error(description: Text(msg), position: MotionToastPosition.top)
         .show(context);
+  }
+  next1(){
+    return Future.delayed(Duration(seconds: 4),(){
+      Navigator.pop(context);
+    });
   }
 }

@@ -1,5 +1,10 @@
+
+import 'package:dio/dio.dart';
+import 'package:edumeetabin/api&url/apiclass.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:motion_toast/motion_toast.dart';
 
 class Diarypaige extends StatefulWidget {
   const Diarypaige({super.key});
@@ -10,10 +15,19 @@ class Diarypaige extends StatefulWidget {
 
 class _DiarypaigeState extends State<Diarypaige> {
   var date = "";
-  final enterdate = TextEditingController();
-  final enternote = TextEditingController();
+  final enterdate1 = TextEditingController();
+  final enternote2 = TextEditingController();
+  var id3 = "";
+  
+  //String diaryapiurl = "http://iroidtechnologies.in/jeetmeet/api/student/diaries";
+  var diariespost = [];
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    diarypost();
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(253, 253, 253, 25),
@@ -127,7 +141,7 @@ class _DiarypaigeState extends State<Diarypaige> {
                                         ],
                                       ),
                                       TextField(
-                                        controller: enterdate,
+                                        controller: enterdate1,
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(),
                                             labelText: "Enter Date",
@@ -149,7 +163,7 @@ class _DiarypaigeState extends State<Diarypaige> {
                                                         DateFormat.yMMMMEEEEd()
                                                             .format(
                                                                 selectedate1!);
-                                                    enterdate.text = date;
+                                                    enterdate1.text = date;
                                                   });
                                                 },
                                                 icon: Icon(Icons.date_range))),
@@ -163,7 +177,7 @@ class _DiarypaigeState extends State<Diarypaige> {
                                               border: Border.all(
                                                   color: Colors.black)),
                                           child: TextField(
-                                            controller: enternote,
+                                            controller: enternote2,
                                             keyboardType:
                                                 TextInputType.multiline,
                                             expands: true,
@@ -178,7 +192,11 @@ class _DiarypaigeState extends State<Diarypaige> {
                                       Padding(
                                         padding: const EdgeInsets.only(top: 10),
                                         child: ElevatedButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            setState(() {
+                                              diariesave();
+                                            });
+                                          },
                                           child: Text(
                                             "Submit",
                                             style:
@@ -193,7 +211,8 @@ class _DiarypaigeState extends State<Diarypaige> {
                                     ],
                                   ),
                                 ),
-                              ));
+                              )
+                              );
                     },
                     child: Text(
                       "Add Diaries+",
@@ -204,8 +223,9 @@ class _DiarypaigeState extends State<Diarypaige> {
                 )),
             Expanded(
               child: ListView.builder(
-                  itemCount: 2,
+                  itemCount: diariespost.length,
                   itemBuilder: (context, index) {
+                    id3 = index.toString();
                     return Padding(
                       padding:
                           const EdgeInsets.only(top: 20, right: 20, left: 20),
@@ -228,14 +248,14 @@ class _DiarypaigeState extends State<Diarypaige> {
                                       borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(20),
                                           bottomRight: Radius.circular(5))),
-                                  child: Center(child: Text("16",
+                                  child: Center(child: Text(diariespost[index].id.toString(),
                                   style: TextStyle(color: Colors.white),)),
                                 ),
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
                                   child: Text(
-                                    "Good Day",
+                                    diariespost[index].note.toString(),
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 )
@@ -244,7 +264,7 @@ class _DiarypaigeState extends State<Diarypaige> {
                             Padding(
                               padding: const EdgeInsets.only(left: 45, top: 10),
                               child: Row(
-                                children: [Text("Date : "), Text("12/12/2023")],
+                                children: [Text("Date : "), Text(diariespost[index].date.toString())],
                               ),
                             ),
                             Padding(
@@ -252,7 +272,102 @@ class _DiarypaigeState extends State<Diarypaige> {
                               child: Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showDialog(
+                          context: context,
+                          builder: (cnt) => AlertDialog(
+                                content: Container(
+                                  height: 400,
+                                  width: double.infinity,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text("Add Diares"),
+                                          IconButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              icon: Icon(Icons.close))
+                                        ],
+                                      ),
+                                      TextField(
+                                        controller: enterdate1,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: "Enter Date",
+                                            suffixIcon: IconButton(
+                                                onPressed: () async {
+                                                  final selectedate1 =
+                                                      await showDatePicker(
+                                                          context: context,
+                                                          initialDate:
+                                                              DateTime.now(),
+                                                          firstDate: DateTime
+                                                                  .now()
+                                                              .subtract(Duration(
+                                                                  days: 2000)),
+                                                          lastDate:
+                                                              DateTime(3000));
+                                                  setState(() {
+                                                    date =
+                                                        DateFormat.yMMMMEEEEd()
+                                                            .format(
+                                                                selectedate1!);
+                                                    enterdate1.text = date;
+                                                  });
+                                                },
+                                                icon: Icon(Icons.date_range))),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Container(
+                                          height: 200,
+                                          width: 300,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          child: TextField(
+                                            controller: enternote2,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            expands: true,
+                                            maxLines: null,
+                                            decoration: InputDecoration(
+                                              labelText: "Enter Note",
+                                              border: InputBorder.none,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                             //diariesave(); 
+                                             diaryedit();
+                                            });
+                                          },
+                                          child: Text(
+                                            "Submit",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStatePropertyAll(
+                                                      Colors.grey)),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                              );
+                                    },
                                     child: Text(
                                       "Edit",
                                       style: TextStyle(color: Colors.white),
@@ -298,5 +413,69 @@ class _DiarypaigeState extends State<Diarypaige> {
             )
           ],
         ));
+  }
+  void diarypost()async{
+    final result = await apiclass().diaryuserapi();
+    setState(() {
+      diariespost.addAll(result!.data!);
+      print(diariespost);
+    });
+  }
+  void diaryedit(){
+    final enterdate = enterdate1.text;
+    final enternote = enternote2.text;
+    if(enterdate.isEmpty){
+      showerrormsg1("Date is Empty");
+    }else if (enternote.isEmpty){
+      showerrormsg1("Note is Empty");
+    }else{
+    final frmdata4 = FormData.fromMap({
+        "id":id3,
+      });
+      final Response = apiclass().diaryedituserapi(frmdata4);
+      print("response${Response}");
+      if(Response != null){
+      showsucessmsg1("Edit Sucess");
+      next1();
+    }
+    }
+  }
+  void diariesave(){
+    final enterdate = enterdate1.text;
+    final enternote = enternote2.text;
+    if(enterdate.isEmpty){
+      showerrormsg1("Enter Date");
+    }else if(enternote.isEmpty){
+      showerrormsg1("Note is Empty");
+    }else{
+      final frmdata3 = FormData.fromMap({
+        "id":id3,
+        "date":enterdate,
+        "note":enternote
+      });
+      final Response = apiclass().diariessaveapi(frmdata3);
+      if(Response != null){
+        showsucessmsg1("Diary is created");
+        next1();
+      }else{
+        showerrormsg1("Fail");
+      }
+    }
+  }
+  void showsucessmsg1(String msg) {
+    MotionToast.success(
+            description: Text(msg), position: MotionToastPosition.top,
+            )
+        .show(context);
+  }
+
+  void showerrormsg1(String msg) {
+    MotionToast.error(description: Text(msg), position: MotionToastPosition.top)
+        .show(context);
+  }
+  next1(){
+    return Future.delayed(Duration(seconds: 4),(){
+      Navigator.pop(context);
+    });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:edumeetabin/api&url/apiclass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +17,9 @@ class _LeaveApplyState extends State<LeaveApply> {
     "Sick",
     "Family Emergency"
   ];
+
+  var leaveapplydata = [];
+
   String slectedcategory = "";
 
   var startingdate = "";
@@ -27,8 +31,17 @@ class _LeaveApplyState extends State<LeaveApply> {
   final startingtimecontroller = TextEditingController();
   var endingtime = TimeOfDay.now();
   final endingtimecontroller = TextEditingController();
+  
+ var clr =Colors.orange;
+ var sta = "Pending";
+
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    leaveapply();
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(253, 253, 253, 25),
@@ -105,8 +118,18 @@ class _LeaveApplyState extends State<LeaveApply> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: 2,
+                itemCount:leaveapplydata.length,
                 itemBuilder: (context, index) {
+                  if(leaveapplydata[index].status == 0){
+                    clr = Colors.orange;
+                    sta = "Pending";
+                  }else if (leaveapplydata[index].status == 1){
+                    clr = Colors.green;
+                    sta = "Approved";
+                  }else if(leaveapplydata[index].status == 2){
+                    clr = Colors.red;
+                    sta = "Rejected";
+                  }
                   return Padding(
                     padding:
                         const EdgeInsets.only(top: 10, right: 20, left: 20),
@@ -119,7 +142,7 @@ class _LeaveApplyState extends State<LeaveApply> {
                               Text("Date:"),
                               Padding(
                                 padding: const EdgeInsets.only(left: 5),
-                                child: Text("12/12/2023"),
+                                child: Text(leaveapplydata[index].applyDate.toString()),
                               ),
                               Spacer(),
                               Row(
@@ -132,11 +155,11 @@ class _LeaveApplyState extends State<LeaveApply> {
                                     height: 20,
                                     width: 65,
                                     decoration:
-                                        BoxDecoration(color: Colors.orange,
+                                        BoxDecoration(color: clr,
                                         borderRadius: BorderRadius.circular(3)),
                                     child: Center(
                                         child: Text(
-                                      "Pending",
+                                      sta,
                                       style: TextStyle(color: Colors.white),
                                     )),
                                   )
@@ -175,14 +198,37 @@ class _LeaveApplyState extends State<LeaveApply> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text("Applicant Name"),
-                                              Text("Kiran R V"),
+                                              Row(
+                                                children: [
+                                                  Text(leaveapplydata[index].studentname.firstName.toString()),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(left: 5),
+                                                    child: Text(leaveapplydata[index].studentname.middleName.toString()),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(left: 5),
+                                                    child: Text(leaveapplydata[index].studentname.lastName.toString()),
+                                                  )
+                                                ],
+                                              ),
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 20),
-                                                child: Column(
+                                                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text("Shedule"),
-                                                    Text("Date")
+                                                    Row(
+                                                      children: [
+                                                        Text("From :"),
+                                                        Text(leaveapplydata[index].fromDate.toString()),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text("To :"),
+                                                        Text(leaveapplydata[index].toDate.toString())
+                                                      ],
+                                                    )
                                                   ],
                                                 ),
                                               )
@@ -211,14 +257,14 @@ class _LeaveApplyState extends State<LeaveApply> {
                                           child: Column(
                                             children: [
                                               Text("Category"),
-                                              Text("Casual"),
+                                              Text(leaveapplydata[index].leaveCategoryname.name.toString()),
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 20),
                                                 child: Column(
                                                   children: [
                                                     Text("Days"),
-                                                    Text("1")
+                                                    Text(leaveapplydata[index].leaveDays.toString())
                                                   ],
                                                 ),
                                               )
@@ -237,7 +283,7 @@ class _LeaveApplyState extends State<LeaveApply> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text("Reason"),
-                                      Text("Reason for leave"),
+                                      Text(leaveapplydata[index].reason.toString()),
                                       Padding(
                                         padding: const EdgeInsets.only(top: 20),
                                         child: Text("Attachment"),
@@ -264,7 +310,216 @@ class _LeaveApplyState extends State<LeaveApply> {
                                         child: Row(
                                           children: [
                                             ElevatedButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                 showDialog(
+                      context: context,
+                      builder: (cnt1) => AlertDialog(
+                            content: Container(
+                              height: double.infinity,
+                              width: double.infinity,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Leave Application",
+                                          style: TextStyle(fontSize: 19),
+                                        ),
+                                        IconButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            icon: Icon(Icons.close))
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: DropdownButtonFormField(
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              label: Text("Select category")),
+                                          items: leavecategory
+                                              .map((e) => DropdownMenuItem(
+                                                    child: Text(e),
+                                                    value: e,
+                                                  ))
+                                              .toList(),
+                                          onChanged: ((value) {
+                                            slectedcategory = value.toString();
+                                          })),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: TextField(
+                                        controller: startingdatecontroller,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: "Starting Date",
+                                            suffixIcon: IconButton(
+                                                onPressed: () async {
+                                                  final selectedate2 =
+                                                      await showDatePicker(
+                                                          context: context,
+                                                          initialDate:
+                                                              DateTime.now(),
+                                                          firstDate: DateTime
+                                                                  .now()
+                                                              .subtract(Duration(
+                                                                  days: 2000)),
+                                                          lastDate:
+                                                              DateTime(3000));
+                                                  setState(() {
+                                                    startingdate =
+                                                        DateFormat.yMMMMEEEEd()
+                                                            .format(
+                                                                selectedate2!);
+                                                    startingdatecontroller
+                                                        .text = startingdate;
+                                                  });
+                                                },
+                                                icon: Icon(Icons.date_range))),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: TextField(
+                                        controller: startingtimecontroller,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: "Starting Time",
+                                            suffixIcon: IconButton(
+                                                onPressed: () async {
+                                                  final selecttime1 =
+                                                      await showTimePicker(
+                                                          context: context,
+                                                          initialTime:
+                                                              TimeOfDay.now());
+                                                  if (selecttime1 != null &&
+                                                      selecttime1 !=
+                                                          startingtime) {
+                                                    setState(() {
+                                                      startingtimecontroller
+                                                              .text =
+                                                          selecttime1
+                                                              .toString();
+                                                    });
+                                                  }
+                                                },
+                                                icon: Icon(Icons.schedule))),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: TextField(
+                                        controller: endingdatecontroller,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: "End Date",
+                                            suffixIcon: IconButton(
+                                                onPressed: () async {
+                                                  final selectedate3 =
+                                                      await showDatePicker(
+                                                          context: context,
+                                                          initialDate:
+                                                              DateTime.now(),
+                                                          firstDate: DateTime
+                                                                  .now()
+                                                              .subtract(Duration(
+                                                                  days: 2000)),
+                                                          lastDate:
+                                                              DateTime(3000));
+                                                  setState(() {
+                                                    endingdate =
+                                                        DateFormat.yMMMMEEEEd()
+                                                            .format(
+                                                                selectedate3!);
+                                                    endingdatecontroller.text =
+                                                        endingdate;
+                                                  });
+                                                },
+                                                icon: Icon(Icons.date_range))),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: TextField(
+                                        controller: endingtimecontroller,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: "End Time",
+                                            suffixIcon: IconButton(
+                                                onPressed: () async {
+                                                  final selecttime2 =
+                                                      await showTimePicker(
+                                                          context: context,
+                                                          initialTime:
+                                                              TimeOfDay.now());
+                                                  if (selecttime2 != null &&
+                                                      selecttime2 !=
+                                                          endingtime) {
+                                                    setState(() {
+                                                      endingtimecontroller
+                                                              .text =
+                                                          selecttime2
+                                                              .toString();
+                                                    });
+                                                  }
+                                                },
+                                                icon: Icon(Icons.schedule))),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Container(
+                                        height: 200,
+                                        width: 300,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.black)),
+                                        child: TextField(
+                                          keyboardType: TextInputType.multiline,
+                                          enabled: true,
+                                          maxLines: null,
+                                          decoration: InputDecoration(
+                                              labelText: "Reason",
+                                              border: InputBorder.none),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: TextField(
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: "Attachment",
+                                            suffixIcon: IconButton(
+                                                onPressed: () {},
+                                                icon: Icon(Icons.attach_file))),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text(
+                                          "Submit",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStatePropertyAll(
+                                                    Colors.grey)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ));
+                                              },
                                               child: Text(
                                                 "Edit",
                                                 style: TextStyle(
@@ -530,7 +785,8 @@ class _LeaveApplyState extends State<LeaveApply> {
                                 ),
                               ),
                             ),
-                          ));
+                          )
+                          );
                 },
                 child: Text(
                   "Add a leave application",
@@ -545,5 +801,13 @@ class _LeaveApplyState extends State<LeaveApply> {
         ],
       ),
     );
+  }
+  void leaveapply()async{
+    final result = await apiclass().leaveapplyuserapi();
+    setState(() {
+      leaveapplydata.addAll(result!.data!);
+    
+      print(leaveapplydata);
+    });
   }
 }

@@ -22,7 +22,6 @@ class _HomePaigeState extends State<HomePaige> {
   String studentimage = "";
   String parentimage = ""; 
   
-  String userid = "";
   String firstnme = "";
   String middlenme = "";
   String lastnme = "";
@@ -38,10 +37,14 @@ class _HomePaigeState extends State<HomePaige> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    profilename();
-    detailname();
+    setState(() {
+       profilename();
+    });
+
+   
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(253, 253, 253, 25),
@@ -81,7 +84,7 @@ class _HomePaigeState extends State<HomePaige> {
                           border: Border.all(color: Colors.white, width: 2)),
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(studentimage),
+                       // backgroundImage: NetworkImage(studentimage),
                       ),
                     ),
                   ),
@@ -99,24 +102,10 @@ class _HomePaigeState extends State<HomePaige> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 30),
-                          child: Row(
-                            children: [
-                              Text(
-                                firstnme,
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 19),
-                              ),
-                              Text(
-                                middlenme,
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 19),
-                              ),
-                              Text(
-                                lastnme,
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 19),
-                              ),
-                            ],
+                          child: Text(
+                            "$firstnme $middlenme $lastnme",
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 19),
                           ),
                         )
                       ],
@@ -474,14 +463,7 @@ class _HomePaigeState extends State<HomePaige> {
                     padding: const EdgeInsets.only(top: 90),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(firstnme),
-                            Text(middlenme),
-                            Text(lastnme),
-                          ],
-                        ),
+                        Text("$firstnme $middlenme $lastnme",style: TextStyle(fontSize: 18),),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -590,7 +572,7 @@ class _HomePaigeState extends State<HomePaige> {
                 alignment: Alignment.topCenter,
                 child: CircleAvatar(
                   radius: 70,
-                  backgroundImage: NetworkImage(studentimage),
+                 // backgroundImage: NetworkImage(studentimage),
                 ),
               ),
               Padding(
@@ -606,7 +588,7 @@ class _HomePaigeState extends State<HomePaige> {
                           ]),
                       child: CircleAvatar(
                         radius: 40,
-                        backgroundImage: NetworkImage(parentimage),
+                    //    backgroundImage: NetworkImage(parentimage),
                       ),
                     ),
                   ],
@@ -726,16 +708,6 @@ class _HomePaigeState extends State<HomePaige> {
       parentfirstnme = result.data[0].parents.firstName;
       parentlastnme = result.data[0].parents.lastName;
       print("parent${parentfirstnme}");
-    });
-  }
-  void detailname()async{
-    print("helloooooo");
-    final result = await apiclass().detailuserapi();
-    print("hello${result}");
-    setState(() {
-      studentimage = result!.data.profileImageUrl;
-      parentimage = result.data.parents.imageUrl;
-      
     });
   }
 }

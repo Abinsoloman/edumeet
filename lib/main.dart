@@ -131,8 +131,8 @@ class _LoginpaigeState extends State<Loginpaige> {
                   padding: const EdgeInsets.only(top: 20),
                   child: ElevatedButton(
                     onPressed: () {
-                      //fetchposts1();
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePaige()));
+                      fetchposts1();
+                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePaige()));
                     },
                     child: Text(
                       "Login",

@@ -2,7 +2,11 @@
 
 import 'package:dio/dio.dart';
 import 'package:edumeetabin/model/detailsmodel.dart';
+import 'package:edumeetabin/model/diariesmodel.dart';
+import 'package:edumeetabin/model/diaryeditmodel.dart';
+import 'package:edumeetabin/model/diarymodel.dart';
 import 'package:edumeetabin/model/editprofile.dart';
+import 'package:edumeetabin/model/leaveapplymodel.dart';
 import 'package:edumeetabin/model/profilemodel.dart';
 import 'package:edumeetabin/api&url/url.dart';
 import 'package:edumeetabin/model/loginmodel.dart';
@@ -54,6 +58,7 @@ class apiclass {
       "Accepts" : "application/json",
       "Authorization": "Bearer $tok"
   }));
+  print("hdksdskfjf${result}");
   return detailsmodel.fromJson(result.data);
  }
  Future<editprofile?>editprofileuserapi(FormData formData)async{
@@ -72,4 +77,61 @@ class apiclass {
     print(e);
   }
  }
+ Future<diariessavemodel?>diariessaveapi(FormData formData)async{
+  SharedPreferences share = await SharedPreferences.getInstance();
+  var tok = share.getString("token");
+  try{
+    final result = await dio.post(url.diariesaveurl,data: formData,
+    options: Options(headers: {
+      "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok"
+    }));
+    print("hellloooooo222${result}");
+    return diariessavemodel.fromJson((result.data));
+  }on DioException catch(e){
+    print(e);
+  }
+ }
+ Future<diarymodel?>diaryuserapi()async{
+  SharedPreferences share = await SharedPreferences.getInstance();
+  var tok = share.getString("token");
+    final result = await dio.post(url.diaryurl,
+    options:  Options(headers: {
+      "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok"
+    }));
+    print("hellllloooooo3${result}");
+    return diarymodel.fromJson((result.data));
+ }
+ Future<diaryeditmodel?>diaryedituserapi (FormData formData)async{
+    SharedPreferences share = await SharedPreferences.getInstance();
+    var tok = share.getString("token");
+    print("tokennnnnn${tok}");
+    try{
+    final result = await dio.get(url.diaryediturl,
+    options: Options(headers:{
+      "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok" 
+    }));
+    print("resultttttttt${result}");
+    return diaryeditmodel.fromJson(result.data);
+    }on DioException catch(e){
+      print(e);
+    }
+  }
+Future<leaveapplymodel?>leaveapplyuserapi()async{
+  SharedPreferences share = await SharedPreferences.getInstance();
+  var tok = share.getString("token");
+  final result = await dio.post(url.leaveapplyurl,
+  options: Options(headers: {
+    "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok"
+  }));
+  print("heyhoooooooooo${result}");
+  return leaveapplymodel.fromJson((result.data));
+}
 }
