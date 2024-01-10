@@ -8,8 +8,10 @@ import 'package:edumeetabin/personal/myprofile.dart';
 import 'package:edumeetabin/home/noticepaige.dart';
 import 'package:edumeetabin/personal/staffdirectorypaige.dart';
 import 'package:edumeetabin/home/textdata.dart';
+import 'package:edumeetabin/sharedpreferences/sharedpreferencesvaluepaige.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:motion_toast/motion_toast.dart';
 
 class HomePaige extends StatefulWidget {
   const HomePaige({super.key});
@@ -19,8 +21,8 @@ class HomePaige extends StatefulWidget {
 }
 
 class _HomePaigeState extends State<HomePaige> {
-  String studentimage = "";
-  String parentimage = ""; 
+  // String studentimage = "";
+  // String parentimage = ""; 
   
   String firstnme = "";
   String middlenme = "";
@@ -39,6 +41,11 @@ class _HomePaigeState extends State<HomePaige> {
     super.initState();
     setState(() {
        profilename();
+      studentimageget();
+       print("immmmmmmmmm${studentimage}");
+       parentimageget();
+       print("parrrrrrrrrrrr${parentimage}");
+       
     });
 
    
@@ -84,7 +91,7 @@ class _HomePaigeState extends State<HomePaige> {
                           border: Border.all(color: Colors.white, width: 2)),
                       child: CircleAvatar(
                         radius: 50,
-                       // backgroundImage: NetworkImage(studentimage),
+                     //  backgroundImage: NetworkImage(studentimage),
                       ),
                     ),
                   ),
@@ -409,11 +416,9 @@ class _HomePaigeState extends State<HomePaige> {
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Loginpaige()));
+                                                      setState(() {
+                                                        logout();
+                                                      });
                                         },
                                         child: Text(
                                           "Yes",
@@ -434,6 +439,7 @@ class _HomePaigeState extends State<HomePaige> {
                 child: ListTile(
                   leading: Icon(Icons.logout),
                   title: Text("Logout"),
+                  
                 ),
               ),
             ),
@@ -572,7 +578,7 @@ class _HomePaigeState extends State<HomePaige> {
                 alignment: Alignment.topCenter,
                 child: CircleAvatar(
                   radius: 70,
-                 // backgroundImage: NetworkImage(studentimage),
+                  //backgroundImage: NetworkImage(studentimage),
                 ),
               ),
               Padding(
@@ -588,7 +594,7 @@ class _HomePaigeState extends State<HomePaige> {
                           ]),
                       child: CircleAvatar(
                         radius: 40,
-                    //    backgroundImage: NetworkImage(parentimage),
+                       // backgroundImage: NetworkImage(parentimage),
                       ),
                     ),
                   ],
@@ -690,6 +696,19 @@ class _HomePaigeState extends State<HomePaige> {
       ]),
     );
   }
+  void logout()async{
+    final result = await apiclass().logoutuserapi();
+    setState(() {
+      if(result != null ){
+        if(result.status == 1){
+          showsucessmsg1("Logout sucess");
+          next1();
+        }
+      }else{
+        showerrormsg1("Logout Failed");
+      }
+    });
+  }
 
   void profilename() async {
     print("helloooooo");
@@ -708,6 +727,21 @@ class _HomePaigeState extends State<HomePaige> {
       parentfirstnme = result.data[0].parents.firstName;
       parentlastnme = result.data[0].parents.lastName;
       print("parent${parentfirstnme}");
+    });
+  }
+  void showsucessmsg1(String msg) {
+    MotionToast.success(
+      description: Text(msg),
+      position: MotionToastPosition.top,
+    ).show(context);
+  }
+  void showerrormsg1(String msg) {
+    MotionToast.error(description: Text(msg), position: MotionToastPosition.top)
+        .show(context);
+  }
+  next1() {
+    return Future.delayed(Duration(seconds: 4), () {
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>Loginpaige()));
     });
   }
 }

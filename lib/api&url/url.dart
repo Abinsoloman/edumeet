@@ -8,4 +8,7 @@ class URl{
   String diaryurl = "diaries";
   String diaryediturl = "diaries/edit";
   String leaveapplyurl = "leave/apply";
+  String leavesaveurl = "leave/apply/save";
+  String leaveaddurl = "leave/apply/add";
+  String logouturl = "logout";
 }

@@ -7,6 +7,9 @@ import 'package:edumeetabin/model/diaryeditmodel.dart';
 import 'package:edumeetabin/model/diarymodel.dart';
 import 'package:edumeetabin/model/editprofile.dart';
 import 'package:edumeetabin/model/leaveapplymodel.dart';
+import 'package:edumeetabin/model/leavesavemodel.dart';
+import 'package:edumeetabin/model/levaeaddmodel.dart';
+import 'package:edumeetabin/model/logoutmodel.dart';
 import 'package:edumeetabin/model/profilemodel.dart';
 import 'package:edumeetabin/api&url/url.dart';
 import 'package:edumeetabin/model/loginmodel.dart';
@@ -133,5 +136,42 @@ Future<leaveapplymodel?>leaveapplyuserapi()async{
   }));
   print("heyhoooooooooo${result}");
   return leaveapplymodel.fromJson((result.data));
+}
+Future<leavesavemodel?>leavesaveuserapi(FormData formData)async{
+  SharedPreferences share = await SharedPreferences.getInstance();
+  var tok = share.getString("token");
+  print("tokeeeennnnn${tok}");
+  final result = await dio.post(url.leavesaveurl,
+  options: Options(headers: {
+    "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok"
+  }));
+  print("helllllllllllooooo2222${result}");
+  return leavesavemodel.fromJson((result.data));
+}
+Future<leaveaddmodel?>levaeadduserapi()async{
+  SharedPreferences share = await SharedPreferences.getInstance();
+  var tok = share.getString("token");
+  final result = await dio.get(url.leaveaddurl,
+  options: Options(headers: {
+    "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok"
+  }));
+  print("helloooo333${result}");
+  return leaveaddmodel.fromJson((result.data));
+}
+Future< logoutmodel?>logoutuserapi()async{
+  SharedPreferences share = await SharedPreferences.getInstance();
+  var tok = share.getString("token");
+  final result = await dio.get(url.logouturl,
+  options: Options(headers: {
+    "Content": "application/json",
+      "Accepts" : "application/json",
+      "Authorization": "Bearer $tok"
+  }));
+  print("logggggggg${result}");
+  return logoutmodel.fromJson((result.data));
 }
 }

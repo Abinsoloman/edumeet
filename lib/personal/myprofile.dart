@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:edumeetabin/api&url/apiclass.dart';
-import 'package:edumeetabin/sharedpreferences/sharedpreferencesvaluepaige.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motion_toast/motion_toast.dart';
@@ -133,7 +132,7 @@ class _MyprofileState extends State<Myprofile> {
                     child: CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.amber,
-                      //backgroundImage: NetworkImage(studentimage),
+                      backgroundImage: NetworkImage(studentimage),
                     ),
                   ),
                 ),
@@ -277,7 +276,7 @@ class _MyprofileState extends State<Myprofile> {
                                     Border.all(color: Colors.red, width: 3)),
                             child: CircleAvatar(
                               radius: 30,
-                             // backgroundImage: NetworkImage(parentimage),
+                              backgroundImage: NetworkImage(parentimage),
                             ),
                           ),
                         ),
@@ -612,8 +611,10 @@ class _MyprofileState extends State<Myprofile> {
       country = result.data.countries.name;
       nationality = result.data.nationalities.name;
 
-      //studentimage = result.data.profileImageUrl;
-      //parentimage = result.data.parents.imageUrl;
+      studentimage = result.data.profileImageUrl;
+      print("immmmmmm${studentimage}");
+      parentimage = result.data.parents.imageUrl;
+      print("immmmmmmmm222${parentimage}");
       
     });
   }
